@@ -5,6 +5,7 @@ install_packages(){
   brew install tree
   brew install font-hack-nerd-font
   brew install ripgrep
+  brew install tmux
   brew install neovim
   brew install --cask nikitabobko/tap/aerospace
 }
