@@ -15,7 +15,7 @@ set_variables() {
 }
 
 set_bindings() {
-  bindkey -s ^f "$HOME/.config/scripts/tmux-sessionizer.sh\n"
+  bindkey -s ^f "$HOME/.config/scripts/my_tmux.sh\n"
 }
 
 precmd
