@@ -89,6 +89,7 @@ return {
         -- Fuzzy find all the symbols in your current workspace.
         --  Similar to document symbols, except searches over your entire project.
         -- map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
+        map("<leader>e", vim.diagnostic.open_float, "[E]xpand diagnostics")
         map("<leader>lc", function()
           require("telescope.builtin").lsp_dynamic_workspace_symbols { symbols = { "class" } }
         end, "Open Workspace Classes")
