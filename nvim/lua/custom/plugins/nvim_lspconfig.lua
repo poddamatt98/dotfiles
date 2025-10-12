@@ -88,7 +88,16 @@ return {
 
         -- Fuzzy find all the symbols in your current workspace.
         --  Similar to document symbols, except searches over your entire project.
-        map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
+        -- map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
+        map("<leader>lc", function()
+          require("telescope.builtin").lsp_dynamic_workspace_symbols { symbols = { "class" } }
+        end, "Open Workspace Classes")
+        map("<leader>lm", function()
+          require("telescope.builtin").lsp_dynamic_workspace_symbols { symbols = { "method" } }
+        end, "Open Workspace Methods")
+        map("<leader>lf", function()
+          require("telescope.builtin").lsp_dynamic_workspace_symbols { symbols = { "function" } }
+        end, "Open Workspace Functions")
 
         -- Jump to the type of the word under your cursor.
         --  Useful when you're not sure what type a variable is and you want to see
