@@ -218,6 +218,7 @@ return {
           },
         },
       },
+      ts_ls = {},
       -- rust_analyzer = {},
       -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
       --
@@ -265,8 +266,6 @@ return {
 
     require("mason-lspconfig").setup {
       ensure_installed = {
-        "black",
-        "isort",
         "basedpyright",
         "stylua",
       }, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)

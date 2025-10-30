@@ -95,9 +95,18 @@ return { -- Fuzzy Finder (files, lsp, etc)
       }
     end, { desc = "[S]earch [/] in Open Files" })
 
-    -- Shortcut for searching your Neovim configuration files
-    vim.keymap.set("n", "<leader>sn", function()
-      builtin.find_files { cwd = vim.fn.stdpath "config" }
-    end, { desc = "[S]earch [N]eovim files" })
+    vim.keymap.set("n", "<leader>mcs", function()
+      builtin.find_files { cwd = "~/.config" }
+    end, { desc = "[M]y [C]onfig files - [S]earch" })
+    vim.keymap.set("n", "<leader>mcg", function()
+      builtin.live_grep { cwd = "~/.config" }
+    end, { desc = "[M]y [C]onfig files - [G]rep" })
+
+    vim.keymap.set("n", "<leader>mns", function()
+      builtin.find_files { cwd = "~/Documents/Matteo's Vault/" }
+    end, { desc = "[M]y [N]otes files - [S]earch" })
+    vim.keymap.set("n", "<leader>mng", function()
+      builtin.live_grep { cwd = "~/Documents/Matteo's Vault/" }
+    end, { desc = "[M]y [N]otes files - [G]rep" })
   end,
 }

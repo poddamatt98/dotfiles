@@ -1,13 +1,15 @@
 # The syntax is "key = value". The whitespace around the
 # equals doesn't matter.
-background = 282c34
+background = 000000
 foreground = ffffff
 
 # Comments start with a `#` and are only valid on their own line.
 # Blank lines are ignored!
 
 
-background-opacity = 0.8
+background-opacity = 1
 
 # Empty values reset the configuration to the default value
-font-family = Courier New
+font-family = JetBrains Mono
+
+keybind = global:cmd+semicolon=toggle_quick_terminal
