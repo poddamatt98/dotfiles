@@ -9,10 +9,16 @@
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
 after-login-command = []
 
-# You can use it to add commands that run after AeroSpace startup.
-# 'after-startup-command' is run after 'after-login-command'
-# Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = []
+# Run Sketchybar together with AeroSpace
+# sketchbar has a built-in detection of already running process,
+# so it won't be run twice on AeroSpace restart
+after-startup-command = ['exec-and-forget sketchybar']
+
+# Notify Sketchybar about workspace change
+exec-on-workspace-change = ['/bin/bash', '-c',
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)'
+]
+
 
 # Start AeroSpace at login
 start-at-login = true
@@ -104,17 +110,14 @@ alt-shift-l = 'move right'
 alt-shift-minus = 'resize smart -50'
 alt-shift-equal = 'resize smart +50'
 
-# See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-alt-1 = 'workspace 1' # term
-alt-2 = 'workspace 2' # web
-alt-3 = 'workspace 3' # chat
-alt-4 = 'workspace 4' # misc
 
-# See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-alt-shift-1 = 'move-node-to-workspace 1'
-alt-shift-2 = 'move-node-to-workspace 2'
-alt-shift-3 = 'move-node-to-workspace 3'
-alt-shift-4 = 'move-node-to-workspace 4'
+# See: https://nikitabobko.github.io/AeroSpace/commands#workspace
+alt-r = 'workspace 1|web|􀤆'
+alt-u = 'workspace 2|term|􀩼'
+alt-e = 'workspace 3|chat|􀌤'
+alt-i = 'workspace 4|org|􀉉'
+alt-o = 'workspace 5|notes|􀈷'
+alt-w = 'workspace 6|misc|􀏧'
 
 alt-shift-f = 'fullscreen'
 
@@ -127,8 +130,27 @@ alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 alt-shift-semicolon = 'mode service'
 
 [[on-window-detected]]
-if.app-id = "prova"
-run = "move-node-to-workspace 1" # use aerospace list-apps to check app ids
+if.app-id = "org.mozilla.firefox"
+run = "move-node-to-workspace 1|web|􀤆"
+
+[[on-window-detected]]
+if.app-id = "com.mitchellh.ghostty"
+run = "move-node-to-workspace 2|term|􀩼"
+
+[[on-window-detected]]
+if.app-id = "com.apple.iCal"
+run = "move-node-to-workspace 4|org|􀉉"
+
+[[on-window-detected]]
+if.app-id = "com.apple.mail"
+run = "move-node-to-workspace 4|org|􀉉"
+
+[[on-window-detected]]
+if.app-id = "com.appflowy.appflowy.flutter"
+run = "move-node-to-workspace 5|notes|􀈷"
+
+[[on-window-detected]]
+run = "move-node-to-workspace 6|misc|􀏧"
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes

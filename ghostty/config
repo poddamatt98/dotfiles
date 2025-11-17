@@ -10,6 +10,9 @@ foreground = ffffff
 background-opacity = 1
 
 # Empty values reset the configuration to the default value
-font-family = JetBrains Mono
+font-family = UbuntuMono Nerd Font Mono
+font-size = 18
 
 keybind = global:cmd+semicolon=toggle_quick_terminal
+
+window-decoration = none
