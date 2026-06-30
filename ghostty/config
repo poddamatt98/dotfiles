@@ -15,4 +15,3 @@ font-size = 18
 
 keybind = global:cmd+semicolon=toggle_quick_terminal
 
-window-decoration = none
