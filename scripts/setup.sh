@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # Sets up these dotfiles on macOS or Linux (apt-based): installs the tools with Homebrew,
-# links each config folder into ~/.config, and makes ~/.zshrc source zshrc.
-# Safe to run again: installed tools and existing links are skipped.
+# clones the repo if this isn't running from a checkout, links each config folder into
+# ~/.config, and makes ~/.zshrc source zshrc.
+# Safe to run again: installed tools, the checkout and existing links are reused.
+# Runs standalone too:
+#   bash <(curl -fsSL https://raw.githubusercontent.com/poddamatt98/dotfiles/main/scripts/setup.sh)
 set -euo pipefail
 
-DOTFILES="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_URL="https://github.com/poddamatt98/dotfiles.git"
 CONFIG="$HOME/.config"
 OS="$(uname -s)"
+DOTFILES="" # set by get_dotfiles
 
 # Linked into ~/.config on every OS, and on macOS only.
 SHARED_CONFIGS=(nvim tmux ghostty zshrc)
@@ -78,13 +82,62 @@ install_nerd_font_linux() {
     fc-cache -f > /dev/null
 }
 
+# --- Checkout -----------------------------------------------------------------
+
+is_checkout() { [ -d "$1/.git" ] && [ -f "$1/scripts/setup.sh" ]; }
+
+# Sets DOTFILES to the first checkout found, so it never clones a second copy:
+#   1. the checkout this script is running from;
+#   2. ~/.config itself, for installs that cloned the repo as ~/.config;
+#   3. the checkout an existing ~/.config/<name> link points into;
+#   4. $DOTFILES_DIR (default ~/dotfiles), cloned there if it doesn't exist.
+get_dotfiles() {
+    local here name linked
+    here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2> /dev/null && pwd)" || here=""
+    if [ -n "$here" ] && is_checkout "$here"; then
+        DOTFILES=$here
+        info "using this checkout: $DOTFILES"
+        return
+    fi
+    if is_checkout "$CONFIG"; then
+        DOTFILES=$CONFIG
+        info "using the checkout at $DOTFILES"
+        return
+    fi
+    for name in "${SHARED_CONFIGS[@]}"; do
+        linked="$(readlink "$CONFIG/$name" 2> /dev/null)" || continue
+        if is_checkout "$(dirname "$linked")"; then
+            DOTFILES="$(dirname "$linked")"
+            info "using the checkout ~/.config/$name links into: $DOTFILES"
+            return
+        fi
+    done
+    DOTFILES="${DOTFILES_DIR:-$HOME/dotfiles}"
+    if is_checkout "$DOTFILES"; then
+        info "using the checkout at $DOTFILES"
+        return
+    fi
+    if [ -e "$DOTFILES" ]; then
+        echo "$DOTFILES exists but isn't a checkout of the dotfiles." >&2
+        echo "Move it away, or pick another folder with DOTFILES_DIR=<path>." >&2
+        exit 1
+    fi
+    info "cloning $REPO_URL into $DOTFILES"
+    git clone -q "$REPO_URL" "$DOTFILES"
+}
+
 # --- Links --------------------------------------------------------------------
 
-# Asks a yes/no question, defaulting to yes (also when there's no input to read).
+# Asks a yes/no question, defaulting to yes (also when there's no terminal to ask on).
+# Reads from the terminal when stdin isn't one, e.g. when this script is piped into bash.
 confirm() {
-    local answer
+    local answer=""
     printf '    %s [Y/n] ' "$1"
-    read -r answer || answer=""
+    if [ -t 0 ]; then
+        read -r answer || answer=""
+    else
+        { read -r answer < /dev/tty; } 2> /dev/null || echo
+    fi
     case "$answer" in
         [nN]*) return 1 ;;
         *) return 0 ;;
@@ -168,6 +221,10 @@ if [ "$OS" = Darwin ]; then
 else
     install_nerd_font_linux
 fi
+
+# After the packages: git comes with them (apt on Linux, Xcode tools via Homebrew on macOS).
+step "Getting the dotfiles"
+get_dotfiles
 
 step "Linking configs into ~/.config"
 link_configs

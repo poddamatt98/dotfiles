@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal dotfiles for macOS and Linux (apt-based). The repo is cloned anywhere and `scripts/setup.sh` symlinks each config folder into `~/.config`, so every tool picks up its config from its default XDG location (`~/.config/nvim`, `~/.config/tmux/tmux.conf`, `~/.config/ghostty/config`, `~/.config/aerospace/aerospace.toml`, `~/.config/sketchybar/sketchybarrc`). Older macOS installs cloned the repo *as* `~/.config`, which setup detects and leaves alone. Many files hardcode `$HOME/.config/...` paths — keep that layout when adding or moving things, and add new top-level config folders to the link lists in `setup.sh`.
+Personal dotfiles for macOS and Linux (apt-based). `scripts/setup.sh` (also run standalone, see `README.md`) clones the repo to `~/dotfiles` unless it finds an existing checkout, and symlinks each config folder into `~/.config`, so every tool picks up its config from its default XDG location (`~/.config/nvim`, `~/.config/tmux/tmux.conf`, `~/.config/ghostty/config`, `~/.config/aerospace/aerospace.toml`, `~/.config/sketchybar/sketchybarrc`). Older macOS installs cloned the repo *as* `~/.config`, which setup detects and leaves alone. Many files hardcode `$HOME/.config/...` paths — keep that layout when adding or moving things, and add new top-level config folders to the link lists in `setup.sh`.
 
 There is no build or test suite. "Verifying" a change means reloading the relevant tool:
 - zsh: `zshrcrl` (alias for `source ~/.zshrc`)
