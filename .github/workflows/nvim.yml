@@ -1,0 +1,42 @@
+name: nvim
+
+on:
+  push:
+    paths: ["nvim/**", ".github/workflows/nvim.yml"]
+  pull_request:
+    paths: ["nvim/**", ".github/workflows/nvim.yml"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim (stable) and StyLua
+        run: |
+          curl -fsSL https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz | tar xz -C "$RUNNER_TEMP"
+          curl -fsSL -o "$RUNNER_TEMP/stylua.zip" https://github.com/JohnnyMorganz/StyLua/releases/download/v2.6.0/stylua-linux-x86_64.zip
+          unzip -q "$RUNNER_TEMP/stylua.zip" -d "$RUNNER_TEMP/bin"
+          echo "$RUNNER_TEMP/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Cache plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/nvim/lazy
+          key: lazy-${{ hashFiles('nvim/lazy-lock.json') }}
+
+      - name: Smoke test
+        run: nvim/tests/run.sh
+
+      - name: Lockfile is committed
+        run: |
+          git diff --exit-code nvim/lazy-lock.json || {
+            echo "::error::lazy-lock.json changed while installing plugins: run :Lazy sync locally and commit it"
+            exit 1
+          }
+
+      - name: Formatting
+        run: stylua --check nvim
