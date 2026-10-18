@@ -83,4 +83,4 @@ stylua --check .   # formatting
 - `tools.lua` entries that are typos (unknown to lspconfig/conform/nvim-lint/Mason) or not wired into their plugin
 - files under `lua/` or `tests/` missing from the layout above
 
-Runtime problems (missing tools, LSP issues) show in `:checkhealth`, `:Mason` and `:LspInfo`.
+Runtime problems (missing tools, LSP issues) show in `:checkhealth`, `:Mason` and `:checkhealth vim.lsp`.

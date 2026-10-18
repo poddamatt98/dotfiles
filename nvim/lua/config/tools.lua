@@ -8,6 +8,8 @@ M.servers = {
   basedpyright = {
     settings = { basedpyright = { analysis = { typeCheckingMode = "off" } } },
   },
+  -- Also covers CUDA (.cu/.cuh) via lspconfig's default filetypes.
+  clangd = {},
   ts_ls = {},
   lua_ls = {
     settings = { Lua = { completion = { callSnippet = "Replace" } } },
