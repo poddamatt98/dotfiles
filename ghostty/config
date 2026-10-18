@@ -14,4 +14,3 @@ font-family = UbuntuMono Nerd Font Mono
 font-size = 18
 
 keybind = global:cmd+semicolon=toggle_quick_terminal
-

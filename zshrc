@@ -10,10 +10,10 @@ my_precmd() {
     local exit_code=$?
     local status_icon="%F{red}%f"
     (( exit_code == 0 )) && status_icon="%F{green}%f"
-    
+
     # --- Separator ---
     print -P "%F{240}${(l:$COLUMNS::-:)}%f"
-    
+
     local duration=""
     if [[ -n $cmd_start ]]; then
         local elapsed=$(( EPOCHSECONDS - cmd_start ))
@@ -22,8 +22,8 @@ my_precmd() {
         fi
         unset cmd_start
     fi
-    
-    
+
+
     # --- Python env ---
     local env_info=""
     if [[ -n "$VIRTUAL_ENV" ]]; then
@@ -36,7 +36,7 @@ my_precmd() {
     if [[ -n "${AWS_PROFILE:-$AWS_DEFAULT_PROFILE}" ]]; then
         aws_info="%F{208} ${AWS_PROFILE:-$AWS_DEFAULT_PROFILE}%f"
     fi
-    
+
     # --- Git branch + dirty ---
     local git_info=""
     if git rev-parse --is-inside-work-tree &>/dev/null; then
@@ -46,7 +46,7 @@ my_precmd() {
         git_info="%F{green}󰘬 ${branch}${dirty}%f"
 
     fi
-    
+
     # --- Assemble ---
     first_line="%F{cyan}%~%f"
     if [[ -n "$git_info" ]]; then
@@ -64,7 +64,7 @@ my_precmd() {
     fi
     first_line+="
 "
-    
+
     PS1="${first_line} "
 }
 

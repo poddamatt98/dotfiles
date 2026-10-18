@@ -1,0 +1,25 @@
+# Formats files on commit. Set up by scripts/setup.sh (`pre-commit install`).
+# Run on every file with: pre-commit run --all-files
+# A hook that reformats a file fails the commit: review the changes, `git add` and commit again.
+exclude: ^nvim/lazy-lock\.json$ # written by lazy.nvim
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+
+  # Same version as .github/workflows/nvim.yml. Reads nvim/.stylua.toml.
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v2.6.0
+    hooks:
+      - id: stylua-github
+
+  # Matches the scripts' style: 4-space indent, indented case branches, `> /dev/null`.
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.14.1-1
+    hooks:
+      - id: shfmt
+        args: [--write, --indent=4, --case-indent, --space-redirects]

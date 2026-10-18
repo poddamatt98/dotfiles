@@ -12,7 +12,7 @@ There is no build or test suite. "Verifying" a change means reloading the releva
 - nvim: restart; plugin state via `:Lazy`, health via `:checkhealth`
 - aerospace: `aerospace reload-config`
 
-Lua formatting follows `nvim/.stylua.toml`: run `stylua nvim/`.
+Formatting is enforced by a pre-commit hook (`.pre-commit-config.yaml`): StyLua for Lua (config in `nvim/.stylua.toml`), shfmt for shell scripts, and trailing whitespace / final newline for everything. Run it on all files with `pre-commit run --all-files`.
 
 ## Bootstrap and shell
 

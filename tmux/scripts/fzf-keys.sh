@@ -41,9 +41,14 @@ list_keys() {
         }' <(tmux list-keys -N -T "$table" -P "x ") <(tmux list-keys -T "$table")
 }
 
+all_keys() {
+    list_keys root "    "
+    list_keys prefix "$prefix "
+}
+
 # Keys without a note (most plugin ones) show their command, cut short so long ones
 # don't flood the search.
-selected=$({ list_keys root "    "; list_keys prefix "$prefix "; } |
+selected=$(all_keys |
     awk '{ if (length($0) > 120) $0 = substr($0, 1, 119) "…"; print }' |
     fzf \
         --reverse \
