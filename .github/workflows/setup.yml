@@ -1,0 +1,99 @@
+name: setup
+
+# Runs scripts/setup.sh for real on fresh runners. There's no terminal, so every prompt
+# takes its default.
+on:
+  push:
+    paths: ["scripts/setup.sh", "zshrc", ".github/workflows/setup.yml"]
+  pull_request:
+    paths: ["scripts/setup.sh", "zshrc", ".github/workflows/setup.yml"]
+  workflow_dispatch:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck scripts/setup.sh
+
+  setup:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ubuntu runners ship Homebrew: remove it so the run covers installing it too.
+      # (macOS runners need theirs, so there the install step is skipped.)
+      - name: Remove the preinstalled Homebrew
+        if: runner.os == 'Linux'
+        run: sudo rm -rf /home/linuxbrew
+
+      - name: Run setup
+        run: scripts/setup.sh < /dev/null
+
+      - name: Configs are linked into ~/.config
+        run: |
+          names="nvim tmux ghostty zshrc"
+          if [ "$RUNNER_OS" = macOS ]; then names="$names aerospace"; fi
+          for name in $names; do
+            target="$(readlink "$HOME/.config/$name" || true)"
+            if [ "$target" != "$GITHUB_WORKSPACE/$name" ]; then
+              echo "::error::~/.config/$name links to '$target', expected $GITHUB_WORKSPACE/$name"
+              exit 1
+            fi
+          done
+          grep -F '.config/zshrc' "$HOME/.zshrc"
+
+      # In an interactive zsh, like a new terminal: also checks that zshrc puts the
+      # Homebrew tools on PATH.
+      - name: Tools work from a new zsh
+        shell: zsh -i {0}
+        run: |
+          set -e
+          for tool in nvim tmux fzf rg tree tree-sitter; do
+            if ! command -v $tool > /dev/null; then
+              echo "::error::$tool not found on PATH"
+              exit 1
+            fi
+            echo "$tool: $(command -v $tool)"
+          done
+          nvim --version | head -1
+          nvim --clean --headless "+lua if vim.fn.has('nvim-0.11') == 0 then vim.cmd.cquit() end" +qa
+          tmux -V
+          tree-sitter --version
+
+      - name: Hack Nerd Font is installed
+        run: |
+          if [ "$RUNNER_OS" = macOS ]; then
+            ls ~/Library/Fonts /Library/Fonts 2> /dev/null | grep -i "HackNerdFont"
+          else
+            fc-list : family | grep -i "Hack Nerd Font"
+          fi
+
+      - name: Second run reuses everything
+        run: |
+          out="$(scripts/setup.sh < /dev/null 2>&1)"
+          echo "$out"
+          if echo "$out" | grep -E "installing Homebrew|linked ~/.config|added to ~/.zshrc|installing Hack"; then
+            echo "::error::the second run redid a step"
+            exit 1
+          fi
+
+      - name: Standalone run finds the checkout through the links
+        run: |
+          cp scripts/setup.sh "$RUNNER_TEMP/setup.sh"
+          out="$(bash "$RUNNER_TEMP/setup.sh" < /dev/null 2>&1)"
+          echo "$out"
+          echo "$out" | grep -F "links into: $GITHUB_WORKSPACE"
+
+      - name: Standalone run in a fresh HOME clones the repo
+        run: |
+          export HOME="$RUNNER_TEMP/home"
+          mkdir -p "$HOME"
+          bash "$RUNNER_TEMP/setup.sh" < /dev/null
+          test -d "$HOME/dotfiles/.git"
+          test "$(readlink "$HOME/.config/nvim")" = "$HOME/dotfiles/nvim"
