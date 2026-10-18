@@ -7,6 +7,7 @@ install_packages(){
   brew install ripgrep
   brew install tmux
   brew install neovim
+  brew install tree-sitter-cli
   brew install --cask nikitabobko/tap/aerospace
 }
  

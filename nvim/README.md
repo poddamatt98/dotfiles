@@ -1,6 +1,6 @@
 # Neovim config
 
-Requires Neovim ≥ 0.11, git, make, ripgrep and a Nerd Font. Mason needs npm and Python to install some tools.
+Requires Neovim ≥ 0.12, git, make, a C compiler, ripgrep, the `tree-sitter` CLI ≥ 0.26.1 (not from npm; apt's is too old) and a Nerd Font. Mason needs npm and Python (with venv) to install some tools.
 
 ## Layout
 
@@ -24,7 +24,7 @@ lua/plugins/          one lazy.nvim spec (or list of specs) per file, auto-impor
   lsp.lua             mason + LSP setup, LspAttach keymaps, diagnostics, lazydev
   telescope.lua       pickers and search keymaps
   tmux.lua            vim-tmux-navigator
-  treesitter.lua      nvim-treesitter (pinned to master branch)
+  treesitter.lua      nvim-treesitter (main branch): parsers, highlighting, indent
   ui.lua              lualine, neo-tree, which-key, toggleterm
 tests/
   smoke.lua           headless checks (see "Verifying changes")
@@ -63,7 +63,7 @@ Leader is `<Space>`. Check for conflicts (`grep -rn '"<leader>x' lua/`) before a
 
 ## Common tasks
 
-- **Add a language**: add its server to `servers`, formatter to `formatters`, linter to `linters` in `tools.lua`. Treesitter parsers auto-install on first open.
+- **Add a language**: add its server to `servers`, formatter to `formatters`, linter to `linters` in `tools.lua`. Treesitter parsers install on first open; list them in `treesitter.lua` only to preinstall.
 - **Update plugins**: `:Lazy sync`, then commit `lazy-lock.json`.
 
 ## Verifying changes
@@ -79,6 +79,7 @@ stylua --check .   # formatting
 - errors while loading any plugin
 - keymap conflicts (same keys, different `desc`, including LSP/gitsigns buffer maps) and keymaps without `desc`
 - `<leader>` prefixes without a which-key group
+- treesitter failing to highlight (Markdown with injected code blocks)
 - `tools.lua` entries that are typos (unknown to lspconfig/conform/nvim-lint/Mason) or not wired into their plugin
 - files under `lua/` or `tests/` missing from the layout above
 

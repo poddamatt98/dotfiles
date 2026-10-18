@@ -7,4 +7,5 @@ XDG_CONFIG_HOME="$(cd .. && pwd)"
 export XDG_CONFIG_HOME
 
 nvim --headless "+Lazy! restore" +qa
+echo
 nvim --headless --cmd "luafile tests/smoke.lua"

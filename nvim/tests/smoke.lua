@@ -176,6 +176,48 @@ local function check_tools()
   end
 end
 
+-- Does the highlighter's work on Markdown with injected code blocks: headless mode never redraws,
+-- so query errors would otherwise only show up on screen.
+local function check_treesitter()
+  local ts = require "nvim-treesitter"
+  local langs = { "markdown", "markdown_inline", "lua", "python" }
+  -- Build failures are only printed, so check the result instead.
+  local ok, err = pcall(function()
+    ts.install(langs):wait(300000)
+  end)
+  local missing = vim.tbl_filter(function(lang)
+    return not vim.tbl_contains(ts.get_installed(), lang)
+  end, langs)
+  if not ok or #missing > 0 then
+    return fail(
+      "treesitter: parsers not installed: %s (tree-sitter CLI missing?) %s",
+      table.concat(missing, ", "),
+      err or ""
+    )
+  end
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "# T", "```lua", "local x = 1", "```", "```python", "x = 1", "```" })
+  vim.bo[buf].filetype = "markdown"
+  if not vim.treesitter.highlighter.active[buf] then
+    fail "treesitter: highlighting did not start for markdown"
+  end
+  ok, err = pcall(function()
+    local parser = vim.treesitter.get_parser(buf)
+    parser:parse(true)
+    parser:for_each_tree(function(tree, ltree)
+      local query = vim.treesitter.query.get(ltree:lang(), "highlights")
+      if query then
+        for _ in query:iter_captures(tree:root(), buf) do
+        end
+      end
+    end)
+  end)
+  if not ok then
+    fail("treesitter: highlighting markdown failed: %s", err)
+  end
+end
+
 local function check_readme()
   local readme = read(config_dir .. "/README.md")
   local files = vim.fn.globpath(config_dir, "lua/*/*.lua", false, true)
@@ -198,6 +240,7 @@ local function run()
 
   check_keymaps(lazy_config.plugins)
   check_tools()
+  check_treesitter()
   check_readme()
 end
 
@@ -210,6 +253,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
       fail("smoke test crashed: %s", err)
     end
 
+    io.stdout:write "\n" -- plugin output before this may not end with a newline
     for _, note in ipairs(notes) do
       io.stdout:write("note: " .. note .. "\n")
     end

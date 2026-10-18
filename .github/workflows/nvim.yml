@@ -14,9 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Neovim (stable) and StyLua
+      - name: Install Neovim (stable), tree-sitter CLI and StyLua
         run: |
           curl -fsSL https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz | tar xz -C "$RUNNER_TEMP"
+          mkdir -p "$RUNNER_TEMP/bin"
+          curl -fsSL https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-linux-x64.gz | gunzip > "$RUNNER_TEMP/bin/tree-sitter"
+          chmod +x "$RUNNER_TEMP/bin/tree-sitter"
           curl -fsSL -o "$RUNNER_TEMP/stylua.zip" https://github.com/JohnnyMorganz/StyLua/releases/download/v2.6.0/stylua-linux-x86_64.zip
           unzip -q "$RUNNER_TEMP/stylua.zip" -d "$RUNNER_TEMP/bin"
           echo "$RUNNER_TEMP/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
@@ -25,7 +28,9 @@ jobs:
       - name: Cache plugins
         uses: actions/cache@v4
         with:
-          path: ~/.local/share/nvim/lazy
+          path: |
+            ~/.local/share/nvim/lazy
+            ~/.local/share/nvim/site
           key: lazy-${{ hashFiles('nvim/lazy-lock.json') }}
 
       - name: Smoke test
