@@ -1,0 +1,24 @@
+name: format
+
+# Runs the pre-commit hooks on every file, to catch commits made without the hook
+# installed (e.g. edits on GitHub).
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache hook environments
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Run pre-commit on all files
+        run: pipx run pre-commit run --all-files --show-diff-on-failure
