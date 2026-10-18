@@ -35,7 +35,7 @@ jobs:
       - name: Run setup
         run: scripts/setup.sh < /dev/null
 
-      - name: Configs are linked into ~/.config
+      - name: Configs are linked and the pre-commit hook is installed
         run: |
           names="nvim tmux ghostty zshrc"
           if [ "$RUNNER_OS" = macOS ]; then names="$names aerospace"; fi
@@ -47,6 +47,7 @@ jobs:
             fi
           done
           grep -F '.config/zshrc' "$HOME/.zshrc"
+          grep -q pre-commit "$GITHUB_WORKSPACE/.git/hooks/pre-commit"
 
       # In an interactive zsh, like a new terminal: also checks that zshrc puts the
       # Homebrew tools on PATH.
@@ -78,7 +79,7 @@ jobs:
         run: |
           out="$(scripts/setup.sh < /dev/null 2>&1)"
           echo "$out"
-          if echo "$out" | grep -E "installing Homebrew|linked ~/.config|added to ~/.zshrc|installing Hack"; then
+          if echo "$out" | grep -E "installing Homebrew|installed the pre-commit hook|linked ~/.config|added to ~/.zshrc|installing Hack"; then
             echo "::error::the second run redid a step"
             exit 1
           fi

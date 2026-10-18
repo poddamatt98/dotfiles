@@ -17,7 +17,7 @@ SHARED_CONFIGS=(nvim tmux ghostty zshrc)
 MACOS_CONFIGS=(aerospace)
 
 # Installed with Homebrew on every OS. Casks are macOS-only.
-BREW_FORMULAE=(fzf tree ripgrep tmux neovim tree-sitter-cli)
+BREW_FORMULAE=(fzf tree ripgrep tmux neovim tree-sitter-cli pre-commit)
 MACOS_CASKS=(font-hack-nerd-font nikitabobko/tap/aerospace)
 
 step() { printf '\n==> %s\n' "$*"; }
@@ -126,6 +126,16 @@ get_dotfiles() {
     git clone -q "$REPO_URL" "$DOTFILES"
 }
 
+# Installs the git hook that formats files on commit (see .pre-commit-config.yaml).
+install_git_hooks() {
+    if [ -f "$DOTFILES/.git/hooks/pre-commit" ]; then
+        info "pre-commit hook already installed"
+        return
+    fi
+    (cd "$DOTFILES" && pre-commit install > /dev/null)
+    info "installed the pre-commit hook in $DOTFILES"
+}
+
 # --- Links --------------------------------------------------------------------
 
 # Asks a yes/no question, defaulting to yes (also when there's no terminal to ask on).
@@ -225,6 +235,7 @@ fi
 # After the packages: git comes with them (apt on Linux, Xcode tools via Homebrew on macOS).
 step "Getting the dotfiles"
 get_dotfiles
+install_git_hooks
 
 step "Linking configs into ~/.config"
 link_configs
