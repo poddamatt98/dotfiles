@@ -7,9 +7,10 @@ cd "$(dirname "$0")/.."
 tmux_dir=$(pwd)
 
 # Private HOME and socket dir, so the config's ~/.config/tmux paths resolve to this
-# checkout and the test never touches a running tmux.
+# checkout and the test never touches a running tmux. XDG_CONFIG_HOME too: TPM reads
+# the plugin list from there, and GitHub's runners set it to the real ~/.config.
 work=$(mktemp -d)
-export HOME="$work/home" TMUX_TMPDIR="$work"
+export HOME="$work/home" TMUX_TMPDIR="$work" XDG_CONFIG_HOME="$work/home/.config"
 mkdir -p "$HOME/.config"
 ln -s "$tmux_dir" "$HOME/.config/tmux"
 unset TMUX TMUX_PANE
