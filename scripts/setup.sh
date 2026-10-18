@@ -14,7 +14,7 @@ DOTFILES="" # set by get_dotfiles
 
 # Linked into ~/.config on every OS, and on macOS only.
 SHARED_CONFIGS=(nvim tmux ghostty zshrc)
-MACOS_CONFIGS=(aerospace sketchybar)
+MACOS_CONFIGS=(aerospace)
 
 # Installed with Homebrew on every OS. Casks are macOS-only.
 BREW_FORMULAE=(fzf tree ripgrep tmux neovim tree-sitter-cli)

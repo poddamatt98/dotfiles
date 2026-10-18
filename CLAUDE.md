@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal dotfiles for macOS and Linux (apt-based). `scripts/setup.sh` (also run standalone, see `README.md`) clones the repo to `~/dotfiles` unless it finds an existing checkout, and symlinks each config folder into `~/.config`, so every tool picks up its config from its default XDG location (`~/.config/nvim`, `~/.config/tmux/tmux.conf`, `~/.config/ghostty/config`, `~/.config/aerospace/aerospace.toml`, `~/.config/sketchybar/sketchybarrc`). Older macOS installs cloned the repo *as* `~/.config`, which setup detects and leaves alone. Many files hardcode `$HOME/.config/...` paths — keep that layout when adding or moving things, and add new top-level config folders to the link lists in `setup.sh`.
+Personal dotfiles for macOS and Linux (apt-based). `scripts/setup.sh` (also run standalone, see `README.md`) clones the repo to `~/dotfiles` unless it finds an existing checkout, and symlinks each config folder into `~/.config`, so every tool picks up its config from its default XDG location (`~/.config/nvim`, `~/.config/tmux/tmux.conf`, `~/.config/ghostty/config`, `~/.config/aerospace/aerospace.toml`). Older macOS installs cloned the repo *as* `~/.config`, which setup detects and leaves alone. Many files hardcode `$HOME/.config/...` paths — keep that layout when adding or moving things, and add new top-level config folders to the link lists in `setup.sh`.
 
 There is no build or test suite. "Verifying" a change means reloading the relevant tool:
 - zsh: `zshrcrl` (alias for `source ~/.zshrc`)
 - tmux: `prefix r` (prefix is `C-a`)
 - nvim: restart; plugin state via `:Lazy`, health via `:checkhealth`
-- sketchybar: `sketchybar --reload`
+- aerospace: `aerospace reload-config`
 
 Lua formatting follows `nvim/.stylua.toml`: run `stylua nvim/`.
 
@@ -35,6 +35,6 @@ The Neovim config is maintained entirely by LLMs. **Read `nvim/README.md` before
 - After a change, run `nvim/tests/run.sh`, which must pass, and `stylua --check nvim`. CI runs both on push. Commit `lazy-lock.json` after updating plugins.
 - Keep `nvim/README.md` in sync when you add files, keymap prefixes or conventions.
 
-## Window manager and bar
+## Window manager
 
-AeroSpace (`aerospace/aerospace.toml`) launches SketchyBar on startup and fires the custom `aerospace_workspace_change` event with `FOCUSED_WORKSPACE` on every workspace switch. `sketchybar/sketchybarrc` creates one item per `aerospace list-workspaces --all` subscribed to that event, and `sketchybar/plugins/aerospace.sh` highlights the focused one. Changes to workspace handling usually touch both configs.
+AeroSpace (`aerospace/aerospace.toml`, macOS only) is the tiling window manager. There is no custom status bar: SketchyBar was removed, and its config is in git history if it comes back.
