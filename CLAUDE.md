@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal macOS dotfiles. The repo is meant to be cloned **as `~/.config`** (`git clone --recurse-submodules -j8 https://www.github.com/poddamatt98/dotfiles.git .config` from `$HOME`), so every tool picks up its config from its default XDG location (`~/.config/nvim`, `~/.config/tmux/tmux.conf`, `~/.config/ghostty/config`, `~/.config/aerospace/aerospace.toml`, `~/.config/sketchybar/sketchybarrc`). Many files hardcode `$HOME/.config/...` paths — keep that layout when adding or moving things.
+Personal dotfiles for macOS and Linux (apt-based). The repo is cloned anywhere and `scripts/setup.sh` symlinks each config folder into `~/.config`, so every tool picks up its config from its default XDG location (`~/.config/nvim`, `~/.config/tmux/tmux.conf`, `~/.config/ghostty/config`, `~/.config/aerospace/aerospace.toml`, `~/.config/sketchybar/sketchybarrc`). Older macOS installs cloned the repo *as* `~/.config`, which setup detects and leaves alone. Many files hardcode `$HOME/.config/...` paths — keep that layout when adding or moving things, and add new top-level config folders to the link lists in `setup.sh`.
 
 There is no build or test suite. "Verifying" a change means reloading the relevant tool:
 - zsh: `zshrcrl` (alias for `source ~/.zshrc`)
@@ -16,7 +16,7 @@ Lua formatting follows `nvim/.stylua.toml`: run `stylua nvim/`.
 
 ## Bootstrap and shell
 
-- `scripts/setup.sh` installs Homebrew packages (fzf, ripgrep, tmux, neovim, aerospace, nerd font), chmods `scripts/*`, and appends `source $HOME/.config/zshrc` to `~/.zshrc`. It uses the `PODDAMAT_CONFIG` env var (exported by `zshrc`) as the "already configured" guard.
+- `scripts/setup.sh` (bash, must stay bash 3.2-compatible for macOS) installs Homebrew if missing and the `BREW_FORMULAE` on both OSes. macOS also gets `MACOS_CASKS`; Linux first gets Homebrew's build prerequisites and zsh from apt, and the Hack Nerd Font from a release download, since casks are macOS-only. `zshrc` puts Linux Homebrew on `PATH`. It then links `SHARED_CONFIGS` (plus `MACOS_CONFIGS` on macOS) into `~/.config`, asking before moving an existing folder to `.bak` (the default), and appends `source "$HOME/.config/zshrc"` to `~/.zshrc` unless it's already there. Every step is skipped when already done, so it's safe to rerun.
 - `zshrc` is sourced from `~/.zshrc`, not used directly. It builds a custom two-line prompt via `precmd`/`preexec` hooks (cwd, git branch/dirty, venv, AWS profile, exit status, command duration).
 
 ## tmux

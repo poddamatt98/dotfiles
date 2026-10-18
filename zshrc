@@ -71,6 +71,8 @@ my_precmd() {
 
 set_variables() {
   export PODDAMAT_CONFIG="set"
+  # Homebrew on Linux isn't on PATH by default (on macOS its installer sets that up).
+  [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 }
 
 set_aliases() {

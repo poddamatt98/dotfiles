@@ -1,10 +1,13 @@
 # dotfiles
 
-My own MacOS configuration. :D
+My own macOS and Linux configuration. :D
 
 ## Setup
 
-In the home directory, run
+Clone anywhere and run the setup script:
 ```bash
-git clone --recurse-submodules -j8 https://www.github.com/poddamatt98/dotfiles.git .config
+git clone https://www.github.com/poddamatt98/dotfiles.git ~/dotfiles
+~/dotfiles/scripts/setup.sh
 ```
+It installs the tools with Homebrew (installing Homebrew itself if needed) and links each config folder
+into `~/.config`. If one already exists there, it asks before moving it to `.bak`.
