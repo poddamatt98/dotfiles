@@ -71,11 +71,6 @@ my_precmd() {
 
 set_variables() {
   export PODDAMAT_CONFIG="set"
-  export PROJECTS_PATH=$HOME
-}
-
-set_bindings() {
-  bindkey -s ^f "$HOME/.config/scripts/my_tmux.sh\n"
 }
 
 set_aliases() {
@@ -85,7 +80,6 @@ set_aliases() {
 preexec_functions+=(my_preexec)
 precmd_functions+=(my_precmd)
 set_variables
-set_bindings
 set_aliases
 
 # fix autocompletion on : for cppman

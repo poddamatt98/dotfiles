@@ -17,15 +17,15 @@ Lua formatting follows `nvim/.stylua.toml`: run `stylua nvim/`.
 ## Bootstrap and shell
 
 - `scripts/setup.sh` installs Homebrew packages (fzf, ripgrep, tmux, neovim, aerospace, nerd font), chmods `scripts/*`, and appends `source $HOME/.config/zshrc` to `~/.zshrc`. It uses the `PODDAMAT_CONFIG` env var (exported by `zshrc`) as the "already configured" guard.
-- `zshrc` is sourced from `~/.zshrc`, not used directly. It builds a custom two-line prompt via `precmd`/`preexec` hooks (cwd, git branch/dirty, venv, AWS profile, exit status, command duration), sets `PROJECTS_PATH`, and binds `Ctrl-f` to the tmux project picker.
+- `zshrc` is sourced from `~/.zshrc`, not used directly. It builds a custom two-line prompt via `precmd`/`preexec` hooks (cwd, git branch/dirty, venv, AWS profile, exit status, command duration).
 
-## tmux project workflow
+## tmux
 
-Two session pickers live in `scripts/`:
-- `tmux-sessionizer.sh` — fzf over directories in `$PROJECTS_PATH`, creates/attaches a session named after the dir.
-- `my_tmux.sh` — the one actually bound (zsh `Ctrl-f` and tmux `prefix f`). fzf over `$WORKSPACE_PATH` (or `$1`), and for a new session creates one window per subdirectory of `<project>/src/`, each running `nvim` with a split shell. Note it reads `WORKSPACE_PATH`, while `zshrc` only exports `PROJECTS_PATH`.
+- `tmux/tmux.conf` installs TPM and any missing plugin on startup (into the gitignored `tmux/plugins/`). Settings that catppuccin would overwrite go after the TPM `run-shell` line.
+- `tmux/scripts/` holds the fzf pickers opened in popups: `prefix w` / `W` (windows), `prefix s` (sessions), `prefix ?` (key bindings, runs the selected one). Give every `bind-key` a `-N` note: it's the description `prefix ?` shows.
+- After a change, run `tmux/tests/run.sh`, which must pass (it uses a private tmux server and `HOME`, and a stub fzf), and `shellcheck tmux/scripts/*.sh tmux/tests/*.sh`. CI runs both on push.
 
-tmux uses vim-style pane navigation and integrates with `nvim-tmux-navigator` on the Neovim side.
+tmux uses vim-style pane navigation and integrates with `vim-tmux-navigator` on the Neovim side.
 
 ## Neovim
 
