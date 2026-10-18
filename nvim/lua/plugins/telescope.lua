@@ -22,6 +22,19 @@ return {
     local builtin = require "telescope.builtin"
 
     telescope.setup {
+      defaults = {
+        -- Filename first, folder dimmed after it: long/deep paths never hide the name.
+        -- Don't add "truncate": it runs first and cuts the start of long filenames.
+        path_display = { "filename_first" },
+        -- Side by side on wide windows, preview on top below 120 columns (e.g. tmux splits).
+        layout_strategy = "flex",
+        layout_config = {
+          width = 0.95,
+          height = 0.9,
+          flex = { flip_columns = 120 },
+          vertical = { preview_cutoff = 20 }, -- default 40 hides the preview on laptop screens
+        },
+      },
       extensions = { ["ui-select"] = { themes.get_dropdown() } },
     }
     pcall(telescope.load_extension, "fzf")

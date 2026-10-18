@@ -12,7 +12,11 @@ local function telescope_list()
   require("telescope.pickers")
     .new({}, {
       prompt_title = "Harpoon",
-      finder = require("telescope.finders").new_table { results = paths },
+      -- File entries get the same path display and icons as the other pickers.
+      finder = require("telescope.finders").new_table {
+        results = paths,
+        entry_maker = require("telescope.make_entry").gen_from_file {},
+      },
       previewer = conf.file_previewer {},
       sorter = conf.generic_sorter {},
     })
