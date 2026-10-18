@@ -1,0 +1,25 @@
+name: tmux
+
+on:
+  push:
+    paths: ["tmux/**", ".github/workflows/tmux.yml"]
+  pull_request:
+    paths: ["tmux/**", ".github/workflows/tmux.yml"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tmux and ShellCheck
+        run: sudo apt-get update -q && sudo apt-get install -y -q tmux shellcheck
+
+      # Starts without tmux/plugins, so it also covers installing the plugins from scratch.
+      - name: Test
+        run: tmux/tests/run.sh
+
+      - name: ShellCheck
+        run: shellcheck tmux/scripts/*.sh tmux/tests/*.sh
