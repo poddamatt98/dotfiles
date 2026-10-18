@@ -5,6 +5,13 @@ if not vim.uv.fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     error("Error cloning lazy.nvim:\n" .. out)
   end
+  -- Pin lazy.nvim itself to the lockfile, otherwise fresh installs rewrite its entry.
+  local ok, lock = pcall(function()
+    return vim.json.decode(table.concat(vim.fn.readfile(vim.fn.stdpath "config" .. "/lazy-lock.json"), "\n"))
+  end)
+  if ok and lock["lazy.nvim"] then
+    vim.fn.system { "git", "-C", lazypath, "checkout", "--quiet", lock["lazy.nvim"].commit }
+  end
 end
 vim.opt.rtp:prepend(lazypath)
 
